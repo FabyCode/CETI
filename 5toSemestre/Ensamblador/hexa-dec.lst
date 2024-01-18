@@ -1,0 +1,486 @@
+hexa-dec                                                                                                                PAGE 1
+  00B0                   1     RS EQU P3.0
+  00B1                   2     E EQU P3.1
+  0090                   3     DBLCD EQU P1
+  0038                   4     FUNCSET EQU 00111000B
+  000C                   5     DISPON EQU 00001100B
+  0001                   6     DISCLR EQU 00000001B
+  0006                   7     EMSET EQU 00000110B
+  00C0                   8     CARLIN2 EQU 11000000B
+  0080                   9     INCUR EQU 10000000B
+  0080                  10     NUM EQU 80H
+  0081                  11     BCDBUFF EQU 81H
+                        12     INICIO: CLR RS
+                        13     CLR E
+                        14     LCALL RETARD15MS
+                        15     TIMES 4
+                        16     MOV DBLCD, #(FUNCSET)
+                        17     LCALL RETARD1MS
+                        18 +1  ENDM
+                        19 +1                  MOV     dblcd , #( funcset )
+                        20 +1                  LCALL   retard1ms
+****ERROR:Symbolnotdefined:retard1ms
+                        21 +1                  MOV     dblcd , #( funcset )
+                        22 +1                  LCALL   retard1ms
+****ERROR:Symbolnotdefined:retard1ms
+                        23 +1                  MOV     dblcd , #( funcset )
+                        24 +1                  LCALL   retard1ms
+****ERROR:Symbolnotdefined:retard1ms
+                        25 +1                  MOV     dblcd , #( funcset )
+                        26 +1                  LCALL   retard1ms
+****ERROR:Symbolnotdefined:retard1ms
+                        27     MOV DBLCD, #(DISPON)
+                        28     LCALL RETARD1MS
+****ERROR:Symbolnotdefined:retard1ms
+                        29     MOV DBLCD, #(DISPCLR)
+****ERROR:Undefinedsymbolname:dispclr
+                        30     LCALL RETARD5MS
+                        31     MOV DBLCD, #(EMSET)
+                        32     LCALL RETARD1MS
+****ERROR:Symbolnotdefined:retard1ms
+                        33     MOV DPTR, #INTR
+                        34     LCALL MUESTRAS
+                        35     MOV R2, #1D
+                        36     MOV R1, #0D
+                        37     MOV R0, #(NUM)
+                        38     LCALL MEMR0
+****ERROR:Symbolnotdefined:memr0
+                        39     LCALL LEERLSB
+****ERROR:Symbolnotdefined:leerlsb
+                        40     MOV R0, #(NUM)
+                        41     MOV @R0, A
+                        42     MOV A, #10D
+                        43     LCALL SETCUR
+                        44     MOV A, #4DH
+                        45     LCALL MUESMSB
+                        46     LCALL LEERMSB
+****ERROR:Symbolnotdefined:leermsb
+                        47     MOV R0, #(NUM)
+                        48     SWAP A
+                        49     ORL A, @R0
+                        50     MOV @R0, A
+                        51     MOV R2, #3D
+                        52     MOV R1, #0D
+                        53     MOV R0, #(BCDBUFF)
+                        54     LCALL MEMSETBUFF
+****ERROR:Symbolnotdefined:memsetbuff
+                        55     MOV R1, #(NUM)
+                        56     MOV A, @R1
+                        57     MOV R1, A
+                        58     MOV R0, #(BCDBUFF)
+                        59     LCALL BIN2BCD
+                        60     CLR RS
+                        61     MOV DBLCD, #(DISPCLR)
+****ERROR:Undefinedsymbolname:dispclr
+                        62     SETB E
+                        63     LCALL RETARD15MS
+                        64     CLR E
+                        65     MOV A, #1D
+                        66     LCALL SETCUR
+                        67     MOV R0, #(NUM)
+                        68     LCALL MUESHEX
+                        69     MOV DPTR, #IGUAL
+                        70     LCALL MUESTRAS
+                        71     MOV R0, #(BCDBUFF)
+                        72     LCALL MUESBCD
+                        73     HALT: AJMP HALT
+                        74     RETARD15MS: MOV R1, #30D
+                        75     L3: MOV R0, #250D
+                        76     L2: DJNZ R0, L2
+                        77     DJNZ R1, L3
+                        78     RET
+                        79     RETARD5MS: SETB E
+                        80     MOV R1, #10D
+                        81     L5: MOV R0, #250D
+                        82     L4: DJNZ R0, L4
+                        83     DJNZ R1, L5
+                        84     CLR E
+                        85     RET
+                        86     RET1MS: SETB E
+                        87     MOV R1, #2D
+                        88     L7: MOV R0, #250D
+                        89     L6: DJNZ R0, L6
+                        90     DJNZ R1, L7
+                        91     CLR E
+                        92     RET
+                        93     RETARD1S: MOV R2, #8D
+                        94     L10: MOV R1, #250D
+                        95     L9: MOV R0, #250D
+                        96     L8: DJNZ R0, L8
+                        97     DJNZ R1, L9
+                        98     DJNZ R2, L10
+                        99     RET
+                       100     MUESMSB: SETB RS
+                       101     MOV DBLCD, A
+                       102     ACALL RET1MS
+                       103     RET
+                       104     MUESTRAS: SETB RS
+                       105     CLEARA: MOV A, 0 ; CLEAR A
+                       106     MOVC A, @A+dptr
+                       107     JZ PUTSFIN
+                       108     INC DPTR
+                       109     MOV DBLCD, A
+                       110     ACALL RET1MS
+                       111     AJMP CLEARA
+                       112     PUTSFIN: RET
+                       113     MUESBCD: MOV A, @R0
+                       114     JZ DECENAS
+                       115     ADD A, #30H
+                       116     MOV B, R0
+                       117     LCALL PUTC
+****ERROR:Symbolnotdefined:putc
+                       118     MOV R0, B
+                       119     DECENAS: INC R0
+                       120     MOV A, @R0
+                       121     JZ UNIDADES
+                       122     ADD A, #30H
+                       123     MOV B, R0
+                       124     LCALL PUTC
+****ERROR:Symbolnotdefined:putc
+                       125     MOV R0, B
+                       126     UNIDADES: INC R0
+                       127     MOV A, @R0
+                       128     ADD A, #30H
+                       129     MOV B, R0
+                       130     LCALL MUESMSB
+                       131     MOV R0, B
+                       132     RET
+                       133     MUESHEX:
+                       134     MOV A, R0
+                       135     MOV R7, A
+                       136     MOV A, @R0
+                       137     ANL A, #0F0H
+                       138     SWAP A
+                       139     ACALL PUT4BHEX
+                       140     MOV A, R7
+                       141     MOV R0, A
+                       142     MOV A, @R0
+                       143     ANL A, #0FH
+                       144     ACALL PUT4BHEX
+                       145     RET
+                       146     PUT4BHEX: MOV B, A
+                       147     CLR C
+                       148     SUBB A, #10D
+                       149     JC HEXNUM
+                       150     HEXLET: ADD A, #41H
+                       151     LCALL PUTC
+****ERROR:Symbolnotdefined:putc
+                       152     AJMP P4BHFIN
+                       153     HEXNUM: MOV A, B
+                       154     ADD A, #30H
+                       155     LCALL MUESMSB
+                       156     P4BHFIN: RET
+                       157     LINEA2: CLR RS
+                       158     MOV DBLCD, #(DIRLINEA2)
+****ERROR:Undefinedsymbolname:dirlinea2
+                       159     LCALL RET1MS
+                       160     RET
+                       161     MEMSET: MOV A, R2
+                       162     JZ FINMEMSET
+                       163     DEC A
+                       164     MOV R2, A
+                       165     MOV A, R1
+                       166     MOV @R0, A
+                       167     INC R0
+                       168     AJMP MEMSET
+                       169     FINMEMSET: RET
+                       170     BIN2BCD:
+                       171     INC R0
+                       172     INC R0
+                       173     BIN2BCDLOOP: MOV A, R1
+                       174     JZ FINBIN2BCD
+                       175     MOV B, #10D
+                       176     DIV AB ; B = A (MOD 10)
+                       177     MOV R2, A
+                       178     MOV A, B
+                       179     MOV @R0, A
+                       180     MOV A, R2
+                       181     MOV R1, A
+                       182     DEC R0
+                       183     AJMP BIN2BCDLOOP
+                       184     FINBIN2BCD: RET
+                       185     SETCUR: CLR RS
+                       186     ORL A, #(INSTRCUR)
+****ERROR:Undefinedsymbolname:instrcur
+                       187     MOV DBLCD, A
+                       188     LCALL RET1MS
+                       189     RET
+                       190     LEERNUM: LCALL LINEA2
+                       191     MOV DPTR, #CADENA_TIEMPO
+                       192     LCALL PUTS
+****ERROR:Symbolnotdefined:puts
+                       193     MOV R3, #8D
+                       194     LOOPLEERN: MOV A, #7D
+                       195     ADD A, #40H; (LINEA2)
+                       196     ACALL SETCUR
+                       197     MOV A, R3
+                       198     ADD A, #30H;'0'
+                       199     LCALL MUESMSB
+                       200     LCALL RETARD1S
+                       201     DJNZ R3, LOOPLEERN
+                       202     MOV A, P3
+                       203     ANL A, #0F0H
+                       204     SWAP A
+                       205     RET
+0171 496E74726F        206     INTR: DB 'Introduce LSB:\0'
+     6475636520
+     4C53423A00
+0180 5469656E65        207     CADENA_TIEMPO: DB 'Tienes 9 seg\0'
+     7320392073
+     656700
+018D 203D2000          208     IGUAL: DB ' = \0'
+                       209     END
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 18 WARNINGS
+
+
+ERROR SUMMARY:
+Line 20, ERROR:Symbolnotdefined:retard1ms
+Line 23, ERROR:Symbolnotdefined:retard1ms
+Line 26, ERROR:Symbolnotdefined:retard1ms
+Line 29, ERROR:Symbolnotdefined:retard1ms
+Line 32, ERROR:Symbolnotdefined:retard1ms
+Line 34, ERROR:Undefinedsymbolname:dispclr
+Line 38, ERROR:Symbolnotdefined:retard1ms
+Line 45, ERROR:Symbolnotdefined:memr0
+Line 47, ERROR:Symbolnotdefined:leerlsb
+Line 55, ERROR:Symbolnotdefined:leermsb
+Line 64, ERROR:Symbolnotdefined:memsetbuff
+Line 72, ERROR:Undefinedsymbolname:dispclr
+Line 129, ERROR:Symbolnotdefined:putc
+Line 137, ERROR:Symbolnotdefined:putc
+Line 165, ERROR:Symbolnotdefined:putc
+Line 173, ERROR:Undefinedsymbolname:dirlinea2
+Line 202, ERROR:Undefinedsymbolname:instrcur
+Line 209, ERROR:Symbolnotdefined:puts
+
+SYMBOL TABLE:
+??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
+??VERSION. . . . . . . . . . . . . .  N  NUMB  0149H  NOT USED
+AC . . . . . . . . . . . . . . . . .  B  ADDR  00D6H  NOT USED
+ACC. . . . . . . . . . . . . . . . .  D  ADDR  00E0H  NOT USED
+ACSR . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
+ADCF . . . . . . . . . . . . . . . .  D  ADDR  00F6H  NOT USED
+ADCLK. . . . . . . . . . . . . . . .  D  ADDR  00F2H  NOT USED
+ADCON. . . . . . . . . . . . . . . .  D  ADDR  00F3H  NOT USED
+ADDH . . . . . . . . . . . . . . . .  D  ADDR  00F5H  NOT USED
+ADDL . . . . . . . . . . . . . . . .  D  ADDR  00F4H  NOT USED
+AUXR . . . . . . . . . . . . . . . .  D  ADDR  008EH  NOT USED
+AUXR1. . . . . . . . . . . . . . . .  D  ADDR  00A2H  NOT USED
+B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H
+BCDBUFF. . . . . . . . . . . . . . .  N  NUMB  0081H
+BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
+BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
+BIN2BCD. . . . . . . . . . . . . . .  C  ADDR  0132H
+BIN2BCDLOOP. . . . . . . . . . . . .  C  ADDR  0134H
+BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
+CADENA_TIEMPO. . . . . . . . . . . .  C  ADDR  0180H
+CARLIN2. . . . . . . . . . . . . . .  N  NUMB  00C0H  NOT USED
+CCAP0H . . . . . . . . . . . . . . .  D  ADDR  00FAH  NOT USED
+CCAP0L . . . . . . . . . . . . . . .  D  ADDR  00EAH  NOT USED
+CCAP1H . . . . . . . . . . . . . . .  D  ADDR  00FBH  NOT USED
+CCAP1L . . . . . . . . . . . . . . .  D  ADDR  00EBH  NOT USED
+CCAP2H . . . . . . . . . . . . . . .  D  ADDR  00FCH  NOT USED
+CCAP3H . . . . . . . . . . . . . . .  D  ADDR  00FDH  NOT USED
+CCAP4H . . . . . . . . . . . . . . .  D  ADDR  00FEH  NOT USED
+CCAPL2H. . . . . . . . . . . . . . .  D  ADDR  00FCH  NOT USED
+CCAPL2L. . . . . . . . . . . . . . .  D  ADDR  00ECH  NOT USED
+CCAPL3H. . . . . . . . . . . . . . .  D  ADDR  00FDH  NOT USED
+CCAPL3L. . . . . . . . . . . . . . .  D  ADDR  00EDH  NOT USED
+CCAPL4H. . . . . . . . . . . . . . .  D  ADDR  00FEH  NOT USED
+CCAPL4L. . . . . . . . . . . . . . .  D  ADDR  00EEH  NOT USED
+CCAPM0 . . . . . . . . . . . . . . .  D  ADDR  00DAH  NOT USED
+CCAPM1 . . . . . . . . . . . . . . .  D  ADDR  00DBH  NOT USED
+CCAPM2 . . . . . . . . . . . . . . .  D  ADDR  00DCH  NOT USED
+CCAPM3 . . . . . . . . . . . . . . .  D  ADDR  00DDH  NOT USED
+CCAPM4 . . . . . . . . . . . . . . .  D  ADDR  00DEH  NOT USED
+CCF0 . . . . . . . . . . . . . . . .  B  ADDR  00D8H  NOT USED
+CCF1 . . . . . . . . . . . . . . . .  B  ADDR  00D9H  NOT USED
+CCF2 . . . . . . . . . . . . . . . .  B  ADDR  00DAH  NOT USED
+CCF3 . . . . . . . . . . . . . . . .  B  ADDR  00DBH  NOT USED
+CCF4 . . . . . . . . . . . . . . . .  B  ADDR  00DCH  NOT USED
+CCON . . . . . . . . . . . . . . . .  D  ADDR  00D8H  NOT USED
+CFINT. . . . . . . . . . . . . . . .  C  ADDR  0033H  NOT USED
+CH . . . . . . . . . . . . . . . . .  D  ADDR  00F9H  NOT USED
+CKCON. . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
+CKCON0 . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
+CKRL . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
+CKSEL. . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
+CL . . . . . . . . . . . . . . . . .  D  ADDR  00E9H  NOT USED
+CLEARA . . . . . . . . . . . . . . .  C  ADDR  00C6H
+CLKREG . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
+CMOD . . . . . . . . . . . . . . . .  D  ADDR  00D9H  NOT USED
+CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
+CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
+CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
+CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
+DBLCD. . . . . . . . . . . . . . . .  N  NUMB  0090H
+DECENAS. . . . . . . . . . . . . . .  C  ADDR  00DFH
+DISCLR . . . . . . . . . . . . . . .  N  NUMB  0001H  NOT USED
+DISPON . . . . . . . . . . . . . . .  N  NUMB  000CH
+DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
+DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
+DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
+DP1L . . . . . . . . . . . . . . . .  D  ADDR  0084H  NOT USED
+DPH. . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
+DPL. . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
+E. . . . . . . . . . . . . . . . . .  N  NUMB  00B1H
+EA . . . . . . . . . . . . . . . . .  B  ADDR  00AFH  NOT USED
+EC . . . . . . . . . . . . . . . . .  B  ADDR  00AEH  NOT USED
+EECON. . . . . . . . . . . . . . . .  D  ADDR  0096H  NOT USED
+EMSET. . . . . . . . . . . . . . . .  N  NUMB  0006H
+ES . . . . . . . . . . . . . . . . .  B  ADDR  00ACH  NOT USED
+ET0. . . . . . . . . . . . . . . . .  B  ADDR  00A9H  NOT USED
+ET1. . . . . . . . . . . . . . . . .  B  ADDR  00ABH  NOT USED
+ET2. . . . . . . . . . . . . . . . .  B  ADDR  00ADH  NOT USED
+EX0. . . . . . . . . . . . . . . . .  B  ADDR  00A8H  NOT USED
+EX1. . . . . . . . . . . . . . . . .  B  ADDR  00AAH  NOT USED
+EXEN2. . . . . . . . . . . . . . . .  B  ADDR  00CBH  NOT USED
+EXF2 . . . . . . . . . . . . . . . .  B  ADDR  00CEH  NOT USED
+EXTI0. . . . . . . . . . . . . . . .  C  ADDR  0003H  NOT USED
+EXTI1. . . . . . . . . . . . . . . .  C  ADDR  0013H  NOT USED
+F0 . . . . . . . . . . . . . . . . .  B  ADDR  00D5H  NOT USED
+FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
+FINBIN2BCD . . . . . . . . . . . . .  C  ADDR  0144H
+FINMEMSET. . . . . . . . . . . . . .  C  ADDR  0131H
+FUNCSET. . . . . . . . . . . . . . .  N  NUMB  0038H
+HALT . . . . . . . . . . . . . . . .  C  ADDR  008BH
+HEXLET . . . . . . . . . . . . . . .  C  ADDR  010FH  NOT USED
+HEXNUM . . . . . . . . . . . . . . .  C  ADDR  0116H
+IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
+IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
+IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
+IGUAL. . . . . . . . . . . . . . . .  C  ADDR  018DH
+INCUR. . . . . . . . . . . . . . . .  N  NUMB  0080H  NOT USED
+INICIO . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
+INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
+INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
+INTR . . . . . . . . . . . . . . . .  C  ADDR  0171H
+IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
+IPH. . . . . . . . . . . . . . . . .  D  ADDR  00B7H  NOT USED
+IPH0 . . . . . . . . . . . . . . . .  D  ADDR  00B7H  NOT USED
+IPH1 . . . . . . . . . . . . . . . .  D  ADDR  00B3H  NOT USED
+IPL0 . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
+IPL1 . . . . . . . . . . . . . . . .  D  ADDR  00B2H  NOT USED
+IT0. . . . . . . . . . . . . . . . .  B  ADDR  0088H  NOT USED
+IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
+KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
+KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
+KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
+L10. . . . . . . . . . . . . . . . .  C  ADDR  00B2H
+L2 . . . . . . . . . . . . . . . . .  C  ADDR  0091H
+L3 . . . . . . . . . . . . . . . . .  C  ADDR  008FH
+L4 . . . . . . . . . . . . . . . . .  C  ADDR  009CH
+L5 . . . . . . . . . . . . . . . . .  C  ADDR  009AH
+L6 . . . . . . . . . . . . . . . . .  C  ADDR  00A9H
+L7 . . . . . . . . . . . . . . . . .  C  ADDR  00A7H
+L8 . . . . . . . . . . . . . . . . .  C  ADDR  00B6H
+L9 . . . . . . . . . . . . . . . . .  C  ADDR  00B4H
+LEERNUM. . . . . . . . . . . . . . .  C  ADDR  014FH  NOT USED
+LINEA2 . . . . . . . . . . . . . . .  C  ADDR  011EH
+LOOPLEERN. . . . . . . . . . . . . .  C  ADDR  015AH
+MEMSET . . . . . . . . . . . . . . .  C  ADDR  0127H
+MUESBCD. . . . . . . . . . . . . . .  C  ADDR  00D3H
+MUESHEX. . . . . . . . . . . . . . .  C  ADDR  00F8H
+MUESMSB. . . . . . . . . . . . . . .  C  ADDR  00BDH
+MUESTRAS . . . . . . . . . . . . . .  C  ADDR  00C4H
+NUM. . . . . . . . . . . . . . . . .  N  NUMB  0080H
+OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
+OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
+P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
+P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H  NOT USED
+P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H  NOT USED
+P1M1 . . . . . . . . . . . . . . . .  D  ADDR  00D4H  NOT USED
+P1M2 . . . . . . . . . . . . . . . .  D  ADDR  00E2H  NOT USED
+P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H  NOT USED
+P3 . . . . . . . . . . . . . . . . .  D  ADDR  00B0H
+P3M1 . . . . . . . . . . . . . . . .  D  ADDR  00D5H  NOT USED
+P3M2 . . . . . . . . . . . . . . . .  D  ADDR  00E3H  NOT USED
+P4 . . . . . . . . . . . . . . . . .  D  ADDR  00C0H  NOT USED
+P4BHFIN. . . . . . . . . . . . . . .  C  ADDR  011DH
+P4M1 . . . . . . . . . . . . . . . .  D  ADDR  00D6H  NOT USED
+P4M2 . . . . . . . . . . . . . . . .  D  ADDR  00E4H  NOT USED
+P5 . . . . . . . . . . . . . . . . .  D  ADDR  00E8H  NOT USED
+PC . . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
+PCON . . . . . . . . . . . . . . . .  D  ADDR  0087H  NOT USED
+PPCL . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
+PS . . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
+PSL. . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
+PSW. . . . . . . . . . . . . . . . .  D  ADDR  00D0H  NOT USED
+PT0. . . . . . . . . . . . . . . . .  B  ADDR  00B9H  NOT USED
+PT0L . . . . . . . . . . . . . . . .  B  ADDR  00B9H  NOT USED
+PT1. . . . . . . . . . . . . . . . .  B  ADDR  00BBH  NOT USED
+PT1L . . . . . . . . . . . . . . . .  B  ADDR  00BBH  NOT USED
+PT2. . . . . . . . . . . . . . . . .  B  ADDR  00BDH  NOT USED
+PT2L . . . . . . . . . . . . . . . .  B  ADDR  00BDH  NOT USED
+PUT4BHEX . . . . . . . . . . . . . .  C  ADDR  0108H
+PUTSFIN. . . . . . . . . . . . . . .  C  ADDR  00D2H
+PX0. . . . . . . . . . . . . . . . .  B  ADDR  00B8H  NOT USED
+PX0L . . . . . . . . . . . . . . . .  B  ADDR  00B8H  NOT USED
+PX1. . . . . . . . . . . . . . . . .  B  ADDR  00BAH  NOT USED
+PX1L . . . . . . . . . . . . . . . .  B  ADDR  00BAH  NOT USED
+RB8. . . . . . . . . . . . . . . . .  B  ADDR  009AH  NOT USED
+RCAP2H . . . . . . . . . . . . . . .  D  ADDR  00CBH  NOT USED
+RCAP2L . . . . . . . . . . . . . . .  D  ADDR  00CAH  NOT USED
+RCLK . . . . . . . . . . . . . . . .  B  ADDR  00CDH  NOT USED
+RD . . . . . . . . . . . . . . . . .  B  ADDR  00B7H  NOT USED
+REN. . . . . . . . . . . . . . . . .  B  ADDR  009CH  NOT USED
+RESET. . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
+RET1MS . . . . . . . . . . . . . . .  C  ADDR  00A3H
+RETARD15MS . . . . . . . . . . . . .  C  ADDR  008DH
+RETARD1S . . . . . . . . . . . . . .  C  ADDR  00B0H
+RETARD5MS. . . . . . . . . . . . . .  C  ADDR  0096H
+RI . . . . . . . . . . . . . . . . .  B  ADDR  0098H  NOT USED
+RS . . . . . . . . . . . . . . . . .  N  NUMB  00B0H
+RS0. . . . . . . . . . . . . . . . .  B  ADDR  00D3H  NOT USED
+RS1. . . . . . . . . . . . . . . . .  B  ADDR  00D4H  NOT USED
+RXD. . . . . . . . . . . . . . . . .  B  ADDR  00B0H  NOT USED
+SADDR. . . . . . . . . . . . . . . .  D  ADDR  00A9H  NOT USED
+SADDR_0. . . . . . . . . . . . . . .  D  ADDR  00A9H  NOT USED
+SADDR_1. . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
+SADEN. . . . . . . . . . . . . . . .  D  ADDR  00B9H  NOT USED
+SADEN_0. . . . . . . . . . . . . . .  D  ADDR  00B9H  NOT USED
+SADEN_1. . . . . . . . . . . . . . .  D  ADDR  00BAH  NOT USED
+SBUF . . . . . . . . . . . . . . . .  D  ADDR  0099H  NOT USED
+SCON . . . . . . . . . . . . . . . .  D  ADDR  0098H  NOT USED
+SETCUR . . . . . . . . . . . . . . .  C  ADDR  0145H
+SINT . . . . . . . . . . . . . . . .  C  ADDR  0023H  NOT USED
+SM0. . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
+SM1. . . . . . . . . . . . . . . . .  B  ADDR  009EH  NOT USED
+SM2. . . . . . . . . . . . . . . . .  B  ADDR  009DH  NOT USED
+SP . . . . . . . . . . . . . . . . .  D  ADDR  0081H  NOT USED
+SPCON. . . . . . . . . . . . . . . .  D  ADDR  00C3H  NOT USED
+SPCR . . . . . . . . . . . . . . . .  D  ADDR  00D5H  NOT USED
+SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
+SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
+SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
+SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
+T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
+T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
+T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED
+T2MOD. . . . . . . . . . . . . . . .  D  ADDR  00C9H  NOT USED
+TB8. . . . . . . . . . . . . . . . .  B  ADDR  009BH  NOT USED
+TCLK . . . . . . . . . . . . . . . .  B  ADDR  00CCH  NOT USED
+TCON . . . . . . . . . . . . . . . .  D  ADDR  0088H  NOT USED
+TF0. . . . . . . . . . . . . . . . .  B  ADDR  008DH  NOT USED
+TF1. . . . . . . . . . . . . . . . .  B  ADDR  008FH  NOT USED
+TF2. . . . . . . . . . . . . . . . .  B  ADDR  00CFH  NOT USED
+TH0. . . . . . . . . . . . . . . . .  D  ADDR  008CH  NOT USED
+TH1. . . . . . . . . . . . . . . . .  D  ADDR  008DH  NOT USED
+TH2. . . . . . . . . . . . . . . . .  D  ADDR  00CDH  NOT USED
+TI . . . . . . . . . . . . . . . . .  B  ADDR  0099H  NOT USED
+TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
+TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
+TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
+TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH  NOT USED
+TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH  NOT USED
+TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
+TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H  NOT USED
+TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH  NOT USED
+TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
+TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
+TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
+UNIDADES . . . . . . . . . . . . . .  C  ADDR  00ECH
+WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
+WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
+WDTRST . . . . . . . . . . . . . . .  D  ADDR  00A6H  NOT USED
+WR . . . . . . . . . . . . . . . . .  B  ADDR  00B6H  NOT USED
